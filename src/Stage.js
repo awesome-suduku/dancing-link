@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-13 17:14:53
+ * @LastEditTime: 2021-04-14 12:21:29
  */
 const { getMatrixBySuduku } = require("@/utils/matrix.js");
 class Stage {
@@ -112,5 +112,21 @@ class Stage {
 			});
 		});
 	}
+
+	// function matrixLink(matrix) {
+// 	matrix.map((rule, x) => {
+// 		return rule.row.map((el, y, row) => {
+// 			el.right = row[y === row.length - 1 ? 0 : y + 1];
+// 			el.left = row[y === 0 ? row.length - 1 : y - 1];
+// 			el.up = matrix[x === 0 ? matrix.length - 1 : x - 1][y];
+// 			el.down = matrix[x === matrix.length - 1 ? 0 : x + 1][y];
+// 			el.sup = x === 0;
+// 			el.use = el === 1;
+// 			el.name = x === 0 && y === 0 ? "head" : "el";
+// 			el.x = row.x;
+// 			el.y = row.y;
+// 		});
+// 	});
+// }
 }
 module.exports = Stage;
