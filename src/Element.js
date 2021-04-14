@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2021-04-14 17:15:11
+ * @LastEditTime: 2021-04-14 18:25:46
  */
 class Element {
 	constructor(p = {}) {
@@ -53,19 +53,27 @@ class Element {
 	}
 
 	tap() {
-		return this.outLink(this, "down", collection => {
-			collection.push(this.outLink(this.down, "right"));
+		return this.outLine(this, "down", collection => {
+			collection.push(this.outLine(this.down, "right"));
 		});
 	}
 
-	outLink(ele, direction, callback) {
+	/**
+	 * @function outLine
+	 * @description out of line(row or col)
+	 * @param {*} ele 
+	 * @param {*} direction 
+	 * @param {*} callback 
+	 * @returns 
+	 */
+	outLine(ele, direction, callback) {
 		const collection = [];
 		const next = ele[direction];
 		if (!ele.check(next)) {
 			callback && callback(collection);
 			next.out();
 			collection.push(next);
-			this.outLink(ele, direction);
+			this.outLine(ele, direction);
 		}
 		return collection;
 	}
