@@ -4,12 +4,12 @@
  * @Author: lax
  * @Date: 2021-04-13 10:05:08
  * @LastEditors: lax
- * @LastEditTime: 2021-04-14 09:53:32
- * @FilePath: \dancing-link\test\data\index.js
+ * @LastEditTime: 2021-04-14 15:44:50
+ * @FilePath: \dancing-links\test\data\index.js
  */
 module.exports = [
-	[0, 1, 0],
-	[1, 0, 0],
-	[1, 0, 1],
-	[0, 0, 1],
+	{ row: [0, 1, 0] },
+	{ row: [1, 0, 0] },
+	{ row: [1, 0, 1] },
+	{ row: [0, 0, 1] }
 ];

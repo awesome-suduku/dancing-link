@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2021-04-13 15:18:57
+ * @LastEditTime: 2021-04-14 17:15:11
  */
 class Element {
 	constructor(p = {}) {
@@ -13,12 +13,14 @@ class Element {
 		this.left = p.left || null;
 		this.up = p.up || null;
 		this.down = p.down || null;
+		this.col = p.col || null;
+		this.row = p.row || null;
 
 		// matrix 0/1
 		this.value = p.value || 0;
 
-		//
-		this.sup = p.sup === undefined ? false : p.sup;
+		// head/base/col
+		this.type = p.type || "base";
 		// check used
 		this.use = p.use === undefined ? false : p.use;
 		this.name = p.name || "";
@@ -48,6 +50,24 @@ class Element {
 		this.up.down = this;
 		this.down.up = this;
 		this.use = true;
+	}
+
+	tap() {
+		return this.outLink(this, "down", collection => {
+			collection.push(this.outLink(this.down, "right"));
+		});
+	}
+
+	outLink(ele, direction, callback) {
+		const collection = [];
+		const next = ele[direction];
+		if (!ele.check(next)) {
+			callback && callback(collection);
+			next.out();
+			collection.push(next);
+			this.outLink(ele, direction);
+		}
+		return collection;
 	}
 
 	/**

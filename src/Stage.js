@@ -4,17 +4,16 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-14 12:21:29
+ * @LastEditTime: 2021-04-14 16:55:07
  */
-const { getMatrixBySuduku } = require("@/utils/matrix.js");
+const Element = require("@/Element.js");
 class Stage {
-	constructor(suduku) {
-		// 九宫格
-		this.suduku = suduku;
+	constructor(matrix) {
 		// 跳舞链盘
-		this.matrix = [];
+		this.matrix = matrix;
+		this.dance = [];
 		this.init();
-		this.head = this.list[0][0];
+		this.head = this.dance[0][0];
 		this.ans = [];
 	}
 
@@ -28,7 +27,7 @@ class Stage {
 		if (next.check(this.head)) return true;
 
 		// 标记right
-		const nextTaps = this.tap(next.y);
+		next.tap();
 		if (next.check(next.down)) return false;
 
 		nextTaps.map(row => {
@@ -54,37 +53,44 @@ class Stage {
 	 * 每个元素转换为元素对象引用自身周围
 	 */
 	init() {
-		const matrix = getMatrixBySuduku(this.suduku);
-		this.matrix = matrix;
+		this.dance = this.base();
 		this.clear();
+	}
+
+	base() {
+		const list = [];
+		for (let i = 0; i < this.matrix.length; i++) {
+			const row = [];
+			for (let j = 0; j < this.matrix[0].row.length; j++) {
+				row.push(new Element());
+			}
+			list.push(row);
+		}
+		list.map((row, x, arr) => {
+			row.map((ele, y) => {
+				ele.type = x === 0 ? (y === 0 ? "head" : "col") : "base";
+				ele.right = row[y === row.length - 1 ? 0 : y + 1];
+				ele.left = row[y === 0 ? row.length - 1 : y - 1];
+				ele.up = arr[x === 0 ? arr.length - 1 : x - 1][y];
+				ele.down = arr[x === arr.length - 1 ? 0 : x + 1][y];
+				ele.row = x;
+				ele.col = arr[0][y];
+				ele.use = x === 0 ? true : ele === 1;
+				ele.x = x;
+				ele.y = y;
+			});
+		});
+		return list;
 	}
 
 	/**
 	 * 清除所有空对象
 	 */
 	clear() {
-		this.matrix.map(row => {
+		this.dance.map(row => {
 			row.map(el => {
-				if (el.sup && !el.use) el.out();
+				if (!el.use) el.out();
 			});
-		});
-	}
-
-	/**
-	 * 标记元素
-	 * @param {*} col
-	 */
-	tap(col) {
-		return this.matrix.filter((row, y) => {
-			// 仅返回标记元素所在列其他元素的行集合中已使用的元素
-			if (col === y) {
-				return row.filter(el => {
-					if (!el.sup && el.use) {
-						el.out();
-						return true;
-					}
-				});
-			}
 		});
 	}
 
@@ -112,21 +118,5 @@ class Stage {
 			});
 		});
 	}
-
-	// function matrixLink(matrix) {
-// 	matrix.map((rule, x) => {
-// 		return rule.row.map((el, y, row) => {
-// 			el.right = row[y === row.length - 1 ? 0 : y + 1];
-// 			el.left = row[y === 0 ? row.length - 1 : y - 1];
-// 			el.up = matrix[x === 0 ? matrix.length - 1 : x - 1][y];
-// 			el.down = matrix[x === matrix.length - 1 ? 0 : x + 1][y];
-// 			el.sup = x === 0;
-// 			el.use = el === 1;
-// 			el.name = x === 0 && y === 0 ? "head" : "el";
-// 			el.x = row.x;
-// 			el.y = row.y;
-// 		});
-// 	});
-// }
 }
 module.exports = Stage;
