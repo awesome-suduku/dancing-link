@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2021-04-15 09:50:47
+ * @LastEditTime: 2021-04-15 15:02:30
  */
 class Element {
 	constructor(p = {}) {
@@ -17,7 +17,7 @@ class Element {
 		this.row = p.row || null;
 
 		// matrix 0/1
-		this.value = p.value || 0;
+		this.value = p.value;
 
 		// head/base/col
 		this.type = p.type || "base";
@@ -26,8 +26,10 @@ class Element {
 		this.name = p.name || "";
 
 		// point x,y
-		this.x = p.x || null;
-		this.y = p.y || null;
+		this.x = p.x;
+		this.y = p.y;
+
+		this.num = 0;
 	}
 
 	/**
@@ -53,8 +55,8 @@ class Element {
 	}
 
 	tap() {
-		return this.outLine(this, "down", collection => {
-			collection.push(this.outLine(this.down, "right"));
+		return this.outLine(this, "down", [], collection => {
+			this.outLine(this.down, "right", collection);
 		});
 	}
 
@@ -66,23 +68,23 @@ class Element {
 	 * @param {*} callback
 	 * @returns
 	 */
-	outLine(ele, direction, callback) {
-		const collection = [];
+	outLine(ele, direction, collection, callback) {
 		const next = ele[direction];
+		console.log(
+			`enter func ${this.num}: this is [${ele.x},${ele.y}] next is [${next.x},${next.y}]`
+		);
+		this.num++;
+		console.log(`is not ont ${!ele.check(next)}`);
 		if (!ele.check(next)) {
 			callback && callback(collection);
 			next.out();
 			collection.push(next);
-			this.outLine(ele, direction);
+			console.log(`drop: [${next.x},${next.y}]`);
+			console.log(`collection: ${collection.length}`);
+			this.outLine(ele, direction, collection);
 		}
+		console.log(`end func ${this.num}`);
 		return collection;
-	}
-
-	/**
-	 * element activated
-	 */
-	activate() {
-		this.value = 1;
 	}
 
 	check(el) {

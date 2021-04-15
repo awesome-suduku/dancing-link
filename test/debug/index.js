@@ -4,12 +4,13 @@
  * @Author: lax
  * @Date: 2021-04-14 18:59:49
  * @LastEditors: lax
- * @LastEditTime: 2021-04-15 09:51:24
+ * @LastEditTime: 2021-04-15 14:45:38
  * @FilePath: \dancing-links\test\debug\index.js
  */
 const collection = require("./../data/index.js");
 const Stage = require("./../../bin/index.js");
 
 const stage = new Stage(collection);
+const next = stage.head.right;
 
-console.log(stage.cols);
+console.log(next.tap());

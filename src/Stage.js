@@ -4,21 +4,60 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-15 10:52:51
+ * @LastEditTime: 2021-04-15 14:28:47
  */
 const Element = require("@/Element.js");
 class Stage {
 	constructor(matrix) {
-		// 跳舞链盘
+		/**
+		 * matrix: to be solved
+		 * 待解决的矩阵
+		 */
 		this.matrix = matrix;
+
+		/**
+		 * dlx height
+		 * 跳舞链盘的高度
+		 */
 		this.height = this.matrix.length + 1;
+
+		/**
+		 * dlx width
+		 * 跳舞链盘的宽度
+		 */
 		this.width = this.matrix[0].row.length;
+
+		/**
+		 * base chain
+		 * 原链：将每个1转化为Element对象并增加头部元素
+		 */
 		this.chain = [];
+
+		/**
+		 * dlx rows
+		 * 跳舞链的每行集合
+		 */
 		this.rows = [];
+
+		/**
+		 * dlx cols
+		 * 跳舞链的每列集合
+		 */
 		this.cols = [];
-		this.init();
-		// this.head = this.dance[0][0];
+
+		/**
+		 * dlx head element
+		 * 跳舞链head元素
+		 */
+		this.head = null;
+
+		/**
+		 * matrix answers collection
+		 * 矩阵解答集合
+		 */
 		this.ans = [];
+
+		this.init();
 	}
 
 	calculate() {
@@ -60,11 +99,18 @@ class Stage {
 		this.chain = this.createChain();
 		this.rows = this.getRows();
 		this.cols = this.getCols();
+		this.head = this.getHead();
 		this.linkChain();
 		// this.clear();
 	}
 
+	/**
+	 * @function createChain
+	 * @description create base chain
+	 * @returns chain
+	 */
 	createChain() {
+		// add head element
 		const chain = [].concat(
 			{ row: new Array(this.width).fill({}) },
 			this.matrix
@@ -78,6 +124,26 @@ class Stage {
 		});
 	}
 
+	/**
+	 * @function getHead
+	 * @description create head element
+	 * @returns head
+	 */
+	getHead() {
+		return new Element({
+			type: "head",
+			right: this.rows[0][0],
+			left: this.rows[0][this.rows.length - 1],
+			use: true,
+			row: 0
+		});
+	}
+
+	/**
+	 * @function getRows
+	 * @description create dlx rows
+	 * @returns rows
+	 */
 	getRows() {
 		return this.chain.map(row => {
 			return row.filter(el => {
@@ -86,6 +152,11 @@ class Stage {
 		});
 	}
 
+	/**
+	 * @function getCols
+	 * @description create dlx cols
+	 * @returns cols
+	 */
 	getCols() {
 		const cols = [];
 		for (let i = 0; i < this.width; i++) {
@@ -108,12 +179,14 @@ class Stage {
 					ele.right = ele;
 					ele.left = ele;
 				}
-				ele.type = x === 0 ? (y === 0 ? "head" : "col") : "base";
+				ele.type = x === 0 ? "col" : "base";
 				ele.right = row[y === row.length - 1 ? 0 : y + 1];
 				ele.left = row[y === 0 ? row.length - 1 : y - 1];
+				ele.row = x;
 				ele.use = true;
 			});
 		});
+
 		this.cols.map(col => {
 			col.map((ele, x) => {
 				if (col.length === 1) {
@@ -123,6 +196,8 @@ class Stage {
 				ele.up = col[x === 0 ? col.length - 1 : x - 1];
 				ele.down = col[x === col.length - 1 ? 0 : x + 1];
 				ele.col = col[0];
+				ele.value = 1;
+				ele.name = `[up[${ele.up.x},${ele.up.y}],down[${ele.down.x},${ele.down.y}],left[${ele.left.x},${ele.left.y}],right[${ele.right.x},${ele.right.y}]]`;
 			});
 		});
 	}
@@ -150,17 +225,6 @@ class Stage {
 			return el;
 		}, {});
 	}
-
-	/**
-	 * 回标元素集合
-	 * @param {*} list
-	 */
-	tapBack() {
-		this.list.map(row => {
-			row.map(el => {
-				el.in();
-			});
-		});
-	}
 }
+
 module.exports = Stage;
