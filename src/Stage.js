@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-15 18:09:46
+ * @LastEditTime: 2021-04-15 21:22:08
  */
 const Element = require("@/Element.js");
 class Stage {
@@ -57,6 +57,8 @@ class Stage {
 		 */
 		this.ans = [];
 
+		this.plan = [];
+
 		this.init();
 	}
 
@@ -67,38 +69,48 @@ class Stage {
 	dancing() {
 		const r = Math.random(0, 100);
 		console.log(`dancing... ${r}`);
+
 		// step1: get head.right
 		const next = this.head.right;
 		console.log(`next is [${next.x},${next.y}]`);
+
 		console.log(`check next is head: ${next.check(this.head)}`);
-		if (next.check(this.head)) return true;
+		if (next.check(this.head)) {
+			console.log(`find plan: ${this.plan}`);
+			console.log(`dancing end ${r}`);
+			this.ans.push(this.plan.concat());
+			return true;
+		}
 
-		// step2: get next cols
-		const cols = next.getCols();
-		console.log(`get next cols: ${cols.length}`);
-		if (!cols.length) console.log(`dancing end ${r}`);
-		if (!cols.length) return false;
-
-		// 标记right
+		// step2: mark right
 		console.log(`next tap`);
-		next.tap();
+		const { marks } = next.tap();
+
+		console.log(`get next cols: ${marks.length}`);
+		if (!marks.length) console.log(`dancing end ${r}`);
+		if (!marks.length) return false;
 
 		console.log(`cols select`);
-		const result = cols.map((row, i) => {
+		const results = marks.map((mark, i) => {
 			// save row count
 			console.log(`cols select ${i}`);
-			this.ans.push(row.row);
+			this.plan.push(mark.col.row);
 
 			//
 			console.log(`col${i} tap`);
-			row.getRows().map(ele => {
-				ele.col.tap();
+			const dropCollection = mark.rows.map(ele => {
+				return ele.col.tap().drops;
 			});
 
-			return this.dancing();
+			const result = this.dancing();
+
+			this.redo(dropCollection);
+			console.log(`redo: ${this.plan}`);
+
+			return result;
 		});
-		console.log(`result ${result.includes(true)}`);
-		if (result.includes(true)) return true;
+		console.log(`result ${results.includes(true)}`);
+		if (results.includes(true)) return true;
 		return false;
 	}
 
@@ -212,17 +224,13 @@ class Stage {
 		});
 	}
 
-	/**
-	 * 标记该元素所在行剩余元素的首列元素
-	 * @param {*} first
-	 */
-	tapByRow(first) {
-		return this.matrix[first.x].reduce((el, next) => {
-			if (next.y !== first.y) {
-				return el.concat(this.tap(next.y));
-			}
-			return el;
-		}, {});
+	redo(arr) {
+		arr.map(row => {
+			row.map(ele => {
+				ele.in();
+			});
+		});
+		this.plan.pop();
 	}
 }
 

@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2021-04-15 17:01:55
+ * @LastEditTime: 2021-04-15 21:20:54
  */
 class Element {
 	constructor(p = {}) {
@@ -53,11 +53,18 @@ class Element {
 	}
 
 	tap() {
+		const marks = this.getCols().map(col => {
+			const rows = col.getRows().map(el => {
+				return el;
+			});
+			return { col, rows };
+		});
 		const drops = this.outLine(this, "down", [], collection => {
 			this.outLine(this.down, "right", collection);
 		});
 		this.out();
-		return drops.push(this);
+		drops.push(this);
+		return { marks, drops };
 	}
 
 	getCols() {
