@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-15 14:28:47
+ * @LastEditTime: 2021-04-15 18:09:46
  */
 const Element = require("@/Element.js");
 class Stage {
@@ -61,34 +61,44 @@ class Stage {
 	}
 
 	calculate() {
-		this.dancing();
+		if (this.dancing()) return this.ans;
 	}
 
 	dancing() {
-		// 获取head.right
+		const r = Math.random(0, 100);
+		console.log(`dancing... ${r}`);
+		// step1: get head.right
 		const next = this.head.right;
+		console.log(`next is [${next.x},${next.y}]`);
+		console.log(`check next is head: ${next.check(this.head)}`);
 		if (next.check(this.head)) return true;
 
+		// step2: get next cols
+		const cols = next.getCols();
+		console.log(`get next cols: ${cols.length}`);
+		if (!cols.length) console.log(`dancing end ${r}`);
+		if (!cols.length) return false;
+
 		// 标记right
-		const nextTaps = next.tap();
-		if (next.check(next.down)) return false;
+		console.log(`next tap`);
+		next.tap();
 
-		nextTaps.map(row => {
-			// 获取right第一序列
-			const nextFirst = row[0];
+		console.log(`cols select`);
+		const result = cols.map((row, i) => {
+			// save row count
+			console.log(`cols select ${i}`);
+			this.ans.push(row.row);
 
-			// 标记该第一序列同行其余元素的列首元素
-			const nextFirstTaps = this.tapByRow(nextFirst);
+			//
+			console.log(`col${i} tap`);
+			row.getRows().map(ele => {
+				ele.col.tap();
+			});
 
-			// 得到子跳舞链盘
-			if (this.dancing()) {
-				return true;
-			}
-			// 返回该元素同行的其余元素所在的列首元素
-			this.tapBack(nextFirstTaps);
-			this.ans.push(nextFirst);
+			return this.dancing();
 		});
-		this.tapBack(nextTaps);
+		console.log(`result ${result.includes(true)}`);
+		if (result.includes(true)) return true;
 		return false;
 	}
 
@@ -97,9 +107,9 @@ class Stage {
 	 */
 	init() {
 		this.chain = this.createChain();
-		this.rows = this.getRows();
 		this.cols = this.getCols();
 		this.head = this.getHead();
+		this.rows = this.getRows();
 		this.linkChain();
 		// this.clear();
 	}
@@ -130,13 +140,7 @@ class Stage {
 	 * @returns head
 	 */
 	getHead() {
-		return new Element({
-			type: "head",
-			right: this.rows[0][0],
-			left: this.rows[0][this.rows.length - 1],
-			use: true,
-			row: 0
-		});
+		return new Element({ x: -1, y: -1 });
 	}
 
 	/**
@@ -145,10 +149,13 @@ class Stage {
 	 * @returns rows
 	 */
 	getRows() {
-		return this.chain.map(row => {
-			return row.filter(el => {
-				if (el) return true;
-			});
+		return this.chain.map((row, i) => {
+			return [].concat(
+				i === 0 ? [this.head] : [],
+				row.filter(el => {
+					if (el) return true;
+				})
+			);
 		});
 	}
 
@@ -175,11 +182,7 @@ class Stage {
 	linkChain() {
 		this.rows.map((row, x) => {
 			row.map((ele, y) => {
-				if (row.length === 1) {
-					ele.right = ele;
-					ele.left = ele;
-				}
-				ele.type = x === 0 ? "col" : "base";
+				ele.type = x === 0 ? (y === 0 ? "head" : "col") : "base";
 				ele.right = row[y === row.length - 1 ? 0 : y + 1];
 				ele.left = row[y === 0 ? row.length - 1 : y - 1];
 				ele.row = x;
@@ -189,10 +192,6 @@ class Stage {
 
 		this.cols.map(col => {
 			col.map((ele, x) => {
-				if (col.length === 1) {
-					ele.up = ele;
-					ele.down = ele;
-				}
 				ele.up = col[x === 0 ? col.length - 1 : x - 1];
 				ele.down = col[x === col.length - 1 ? 0 : x + 1];
 				ele.col = col[0];
