@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-14 20:00:20
+ * @LastEditTime: 2021-04-15 10:52:51
  */
 const Element = require("@/Element.js");
 class Stage {
@@ -13,7 +13,9 @@ class Stage {
 		this.matrix = matrix;
 		this.height = this.matrix.length + 1;
 		this.width = this.matrix[0].row.length;
-		this.dance = [];
+		this.chain = [];
+		this.rows = [];
+		this.cols = [];
 		this.init();
 		// this.head = this.dance[0][0];
 		this.ans = [];
@@ -56,54 +58,71 @@ class Stage {
 	 */
 	init() {
 		this.chain = this.createChain();
+		this.rows = this.getRows();
+		this.cols = this.getCols();
 		this.linkChain();
 		// this.clear();
 	}
 
 	createChain() {
 		const chain = [].concat(
-			{ row: new Array(this.width).fill(null) },
+			{ row: new Array(this.width).fill({}) },
 			this.matrix
 		);
 		return chain.map((row, x) => {
 			return row.row.map((el, y) => {
-				if (el !== 0 || el === null) return new Element({ x, y, row: x });
-				return null;
+				// when 1 or {}
+				if (el) return new Element({ x, y, row: x });
+				return undefined;
 			});
 		});
 	}
 
-	getRowList() {
-		this.chain
-			.map(row => {
-				return row.row.filter(el => {
-					if (el !== null) return true;
-				});
-			})
-			.map();
+	getRows() {
+		return this.chain.map(row => {
+			return row.filter(el => {
+				if (el) return true;
+			});
+		});
 	}
 
-	getColList() {
+	getCols() {
 		const cols = [];
 		for (let i = 0; i < this.width; i++) {
-			const col = this.chain.map(row => {
-				return row.row[i];
-			});
+			const col = this.chain
+				.map(row => {
+					return row[i];
+				})
+				.filter(el => {
+					if (el) return true;
+				});
 			cols.push(col);
 		}
+		return cols;
 	}
 
 	linkChain() {
-		this.chain.map((row, x, arr) => {
-			row.row.map((ele, y) => {
-				const num = this.matrix[x - 1].row[y];
+		this.rows.map((row, x) => {
+			row.map((ele, y) => {
+				if (row.length === 1) {
+					ele.right = ele;
+					ele.left = ele;
+				}
 				ele.type = x === 0 ? (y === 0 ? "head" : "col") : "base";
 				ele.right = row[y === row.length - 1 ? 0 : y + 1];
 				ele.left = row[y === 0 ? row.length - 1 : y - 1];
-				ele.up = arr[x === 0 ? arr.length - 1 : x - 1][y];
-				ele.down = arr[x === arr.length - 1 ? 0 : x + 1][y];
-				ele.col = arr[0][y];
-				ele.use = x === 0 ? true : this.matrix[x].row[y] === 1;
+				ele.use = true;
+			});
+		});
+		this.cols.map(col => {
+			col.map((ele, x) => {
+				if (col.length === 1) {
+					ele.up = ele;
+					ele.down = ele;
+				}
+				ele.up = col[x === 0 ? col.length - 1 : x - 1];
+				ele.down = col[x === col.length - 1 ? 0 : x + 1];
+				ele.col = col[0];
 			});
 		});
 	}

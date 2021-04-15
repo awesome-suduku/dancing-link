@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2021-04-14 18:25:46
+ * @LastEditTime: 2021-04-15 09:50:47
  */
 class Element {
 	constructor(p = {}) {
@@ -61,10 +61,10 @@ class Element {
 	/**
 	 * @function outLine
 	 * @description out of line(row or col)
-	 * @param {*} ele 
-	 * @param {*} direction 
-	 * @param {*} callback 
-	 * @returns 
+	 * @param {*} ele
+	 * @param {*} direction
+	 * @param {*} callback
+	 * @returns
 	 */
 	outLine(ele, direction, callback) {
 		const collection = [];
