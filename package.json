@@ -1,7 +1,9 @@
 {
   "name": "dancing-links",
   "version": "1.0.0",
-  "author": {"name":"lax"},
+  "author": {
+    "name": "lax"
+  },
   "private": false,
   "license": "MIT",
   "scripts": {
@@ -10,7 +12,8 @@
   },
   "main": "src/index.js",
   "dependencies": {
-    "consola": "^2.15.0"
+    "consola": "^2.15.0",
+    "uglifyjs-webpack-plugin": "^2.2.0"
   },
   "devDependencies": {
     "chai": "^4.3.4",
