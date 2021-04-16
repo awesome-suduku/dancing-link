@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-15 21:22:08
+ * @LastEditTime: 2021-04-16 16:34:26
  */
 const Element = require("@/Element.js");
 class Stage {
@@ -63,7 +63,12 @@ class Stage {
 	}
 
 	calculate() {
-		if (this.dancing()) return this.ans;
+		if (this.dancing())
+			return this.ans.map(plan => {
+				return plan.map(index => {
+					return this.matrix[index - 1];
+				});
+			});
 	}
 
 	dancing() {
@@ -84,7 +89,7 @@ class Stage {
 
 		// step2: mark right
 		console.log(`next tap`);
-		const { marks } = next.tap();
+		const { marks, drops } = next.tap();
 
 		console.log(`get next cols: ${marks.length}`);
 		if (!marks.length) console.log(`dancing end ${r}`);
@@ -101,6 +106,8 @@ class Stage {
 			const dropCollection = mark.rows.map(ele => {
 				return ele.col.tap().drops;
 			});
+			console.log(`redoCollection: `);
+			console.log(dropCollection);
 
 			const result = this.dancing();
 
@@ -109,6 +116,8 @@ class Stage {
 
 			return result;
 		});
+		console.log(drops);
+		this.redo(drops);
 		console.log(`result ${results.includes(true)}`);
 		if (results.includes(true)) return true;
 		return false;
@@ -225,10 +234,14 @@ class Stage {
 	}
 
 	redo(arr) {
-		arr.map(row => {
-			row.map(ele => {
-				ele.in();
-			});
+		arr.map(obj => {
+			if (obj instanceof Array) {
+				obj.map(ele => {
+					ele.in();
+				});
+			} else {
+				obj.in();
+			}
 		});
 		this.plan.pop();
 	}
