@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2021-04-15 21:20:54
+ * @LastEditTime: 2021-04-16 16:41:24
  */
 class Element {
 	constructor(p = {}) {
@@ -21,6 +21,7 @@ class Element {
 
 		// head/base/col
 		this.type = p.type || "base";
+
 		// check used
 		this.use = p.use === undefined ? false : p.use;
 		this.name = p.name || "";
@@ -52,18 +53,26 @@ class Element {
 		this.use = true;
 	}
 
+	/**
+	 *
+	 * @returns
+	 */
 	tap() {
+		// get marks before drop
 		const marks = this.getCols().map(col => {
 			const rows = col.getRows().map(el => {
 				return el;
 			});
 			return { col, rows };
 		});
+
 		const drops = this.outLine(this, "down", [], collection => {
 			this.outLine(this.down, "right", collection);
 		});
+
 		this.out();
 		drops.push(this);
+
 		return { marks, drops };
 	}
 

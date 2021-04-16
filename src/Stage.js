@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-16 16:34:26
+ * @LastEditTime: 2021-04-16 16:50:18
  */
 const Element = require("@/Element.js");
 class Stage {
@@ -57,25 +57,24 @@ class Stage {
 		 */
 		this.ans = [];
 
+		/**
+		 * 一种解决方案缓存
+		 */
 		this.plan = [];
 
 		this.init();
 	}
 
 	calculate() {
-		if (this.dancing())
-			return this.ans.map(plan => {
-				return plan.map(index => {
-					return this.matrix[index - 1];
-				});
-			});
+		if (this.dancing()) return this.getResult();
 	}
 
 	dancing() {
+		// set id
 		const r = Math.random(0, 100);
 		console.log(`dancing... ${r}`);
 
-		// step1: get head.right
+		// step1: get head.right with next
 		const next = this.head.right;
 		console.log(`next is [${next.x},${next.y}]`);
 
@@ -87,25 +86,25 @@ class Stage {
 			return true;
 		}
 
-		// step2: mark right
+		// step2: mark next
 		console.log(`next tap`);
 		const { marks, drops } = next.tap();
 
-		console.log(`get next cols: ${marks.length}`);
+		console.log(`next tap count: ${marks.length}`);
 		if (!marks.length) console.log(`dancing end ${r}`);
 		if (!marks.length) return false;
 
-		console.log(`cols select`);
 		const results = marks.map((mark, i) => {
 			// save row count
-			console.log(`cols select ${i}`);
+			console.log(`try select ${i}`);
 			this.plan.push(mark.col.row);
 
 			//
-			console.log(`col${i} tap`);
+			console.log(`tap select ${i} col as same row`);
 			const dropCollection = mark.rows.map(ele => {
 				return ele.col.tap().drops;
 			});
+
 			console.log(`redoCollection: `);
 			console.log(dropCollection);
 
@@ -116,11 +115,21 @@ class Stage {
 
 			return result;
 		});
+
 		console.log(drops);
 		this.redo(drops);
+
 		console.log(`result ${results.includes(true)}`);
 		if (results.includes(true)) return true;
 		return false;
+	}
+
+	getResult() {
+		return this.ans.map(plan => {
+			return plan.map(index => {
+				return this.matrix[index - 1];
+			});
+		});
 	}
 
 	/**
@@ -233,6 +242,10 @@ class Stage {
 		});
 	}
 
+	/**
+	 * redo element list
+	 * @param {array} arr
+	 */
 	redo(arr) {
 		arr.map(obj => {
 			if (obj instanceof Array) {
@@ -243,6 +256,7 @@ class Stage {
 				obj.in();
 			}
 		});
+		// redo plan
 		this.plan.pop();
 	}
 }
