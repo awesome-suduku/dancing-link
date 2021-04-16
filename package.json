@@ -1,12 +1,14 @@
 {
-  "name": "dancing-link",
+  "name": "dancing-links",
   "version": "1.0.0",
+  "author": {"name":"lax"},
   "private": false,
   "license": "MIT",
   "scripts": {
     "lib": "webpack",
     "test": "mochapack \"test/**/**.test.js\""
   },
+  "main": "src/index.js",
   "dependencies": {
     "consola": "^2.15.0"
   },
