@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-10 17:07:52
  * @LastEditors: lax
- * @LastEditTime: 2021-04-14 17:12:57
+ * @LastEditTime: 2021-08-04 17:32:11
  */
 module.exports = {
 	root: true,
@@ -12,7 +12,7 @@ module.exports = {
 		node: true,
 	},
 	parserOptions: {
-        ecmaVersion: 2017,
+        ecmaVersion: 8,
         sourceType: 'module',
     },
 	extends: ["airbnb-base/legacy","plugin:prettier/recommended"],

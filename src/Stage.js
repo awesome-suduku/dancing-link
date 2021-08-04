@@ -4,9 +4,10 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-04-16 16:50:18
+ * @LastEditTime: 2021-08-04 17:38:06
  */
 const Element = require("@/Element.js");
+const fs = require("fs-extra");
 class Stage {
 	constructor(matrix) {
 		/**
@@ -137,6 +138,7 @@ class Stage {
 	 */
 	init() {
 		this.chain = this.createChain();
+		fs.outputJsonSync(`@/../docs/chain.json`, this.chain);
 		this.cols = this.getCols();
 		this.head = this.getHead();
 		this.rows = this.getRows();
