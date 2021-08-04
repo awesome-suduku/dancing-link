@@ -4,12 +4,12 @@
  * @Author: lax
  * @Date: 2021-04-12 16:44:57
  * @LastEditors: lax
- * @LastEditTime: 2021-04-16 17:12:21
+ * @LastEditTime: 2021-08-04 19:52:18
  * @FilePath: \dancing-links\webpack.config.js
  */
 const path = require("path");
 const resolve = dir => path.resolve(__dirname, dir);
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
 	devtool: "inline-cheap-source-map",
@@ -21,17 +21,8 @@ module.exports = {
 		library: "Stage"
 	},
 	optimization: {
-		minimizer: [
-			new UglifyJsPlugin({
-				uglifyOptions: {
-					compress: {
-						warnings: false,
-						drop_debugger: true,
-						drop_console: true
-					}
-				}
-			})
-		]
+		minimize: true,
+		minimizer: [new TerserPlugin()]
 	},
 	resolve: {
 		// 设置别名

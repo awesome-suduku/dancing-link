@@ -4,10 +4,9 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-08-04 17:38:06
+ * @LastEditTime: 2021-08-04 21:40:33
  */
 const Element = require("@/Element.js");
-const fs = require("fs-extra");
 class Stage {
 	constructor(matrix) {
 		/**
@@ -72,17 +71,19 @@ class Stage {
 
 	dancing() {
 		// set id
-		const r = Math.random(0, 100);
-		console.log(`dancing... ${r}`);
+		const date = new Date();
+		const id = date.getMinutes() + "" + date.getSeconds();
+		console.log(`dancing... ${id}`);
 
 		// step1: get head.right with next
 		const next = this.head.right;
-		console.log(`next is [${next.x},${next.y}]`);
+		console.log(`get next: ${next.getCoordinate()}`);
 
-		console.log(`check next is head: ${next.check(this.head)}`);
-		if (next.check(this.head)) {
+		const isHead = this.head.check(next);
+		console.log(`check next is head: ${isHead}`);
+		if (isHead) {
 			console.log(`find plan: ${this.plan}`);
-			console.log(`dancing end ${r}`);
+			console.log(`dancing end ${id}`);
 			this.ans.push(this.plan.concat());
 			return true;
 		}
@@ -92,13 +93,13 @@ class Stage {
 		const { marks, drops } = next.tap();
 
 		console.log(`next tap count: ${marks.length}`);
-		if (!marks.length) console.log(`dancing end ${r}`);
+		if (!marks.length) console.log(`dancing end ${id}`);
 		if (!marks.length) return false;
 
 		const results = marks.map((mark, i) => {
 			// save row count
 			console.log(`try select ${i}`);
-			this.plan.push(mark.col.row);
+			this.plan.push(mark.col.x);
 
 			//
 			console.log(`tap select ${i} col as same row`);
@@ -138,7 +139,6 @@ class Stage {
 	 */
 	init() {
 		this.chain = this.createChain();
-		fs.outputJsonSync(`@/../docs/chain.json`, this.chain);
 		this.cols = this.getCols();
 		this.head = this.getHead();
 		this.rows = this.getRows();
@@ -180,10 +180,11 @@ class Stage {
 	 * @description create dlx rows
 	 * @returns rows
 	 */
-	getRows() {
-		return this.chain.map((row, i) => {
+	getRows(chain = this.chain, head = this.head) {
+		return chain.map((row, i) => {
 			return [].concat(
-				i === 0 ? [this.head] : [],
+				// add head element in first row
+				i === 0 ? [head] : [],
 				row.filter(el => {
 					if (el) return true;
 				})
@@ -196,10 +197,10 @@ class Stage {
 	 * @description create dlx cols
 	 * @returns cols
 	 */
-	getCols() {
+	getCols(chain = this.chain, width = this.width) {
 		const cols = [];
-		for (let i = 0; i < this.width; i++) {
-			const col = this.chain
+		for (let i = 0; i < width; i++) {
+			const col = chain
 				.map(row => {
 					return row[i];
 				})
@@ -217,7 +218,7 @@ class Stage {
 				ele.type = x === 0 ? (y === 0 ? "head" : "col") : "base";
 				ele.right = row[y === row.length - 1 ? 0 : y + 1];
 				ele.left = row[y === 0 ? row.length - 1 : y - 1];
-				ele.row = x;
+				// all element will be use (head)
 				ele.use = true;
 			});
 		});
@@ -227,6 +228,7 @@ class Stage {
 				ele.up = col[x === 0 ? col.length - 1 : x - 1];
 				ele.down = col[x === col.length - 1 ? 0 : x + 1];
 				ele.col = col[0];
+				// all element have value (not head)
 				ele.value = 1;
 				ele.name = `[up[${ele.up.x},${ele.up.y}],down[${ele.down.x},${ele.down.y}],left[${ele.left.x},${ele.left.y}],right[${ele.right.x},${ele.right.y}]]`;
 			});
