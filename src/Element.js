@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2021-08-04 22:21:15
+ * @LastEditTime: 2021-08-05 17:43:35
  */
 class Element {
   constructor(p = {}) {
@@ -63,18 +63,24 @@ class Element {
   tap() {
     // get marks before drop
     const marks = this.getCols().map(col => {
-      const rows = col.getRows().map(el => {
-        return el;
-      });
-      return { col, rows };
+      const rows = col.getRows().concat([col]);
+      console.log(`mark index: ${col.x},count: ${rows.length}`);
+      return { index: col.x, rows };
     });
 
-    const drops = this.outLine(this, "down", [], collection => {
-      this.outLine(this.down, "right", collection);
-    });
+    // const _drops = this.outLine(this, "down", [], collection => {
+    //   this.outLine(this.down, "right", collection);
+    // });
 
-    this.out();
-    drops.push(this);
+    const drops = marks
+      .reduce((acc, next) => {
+        return acc.concat(next.rows);
+      }, [])
+      .concat([this]);
+
+    drops.map(each => {
+      each.out();
+    });
 
     return { marks, drops };
   }

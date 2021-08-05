@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-10 17:07:52
  * @LastEditors: lax
- * @LastEditTime: 2021-08-04 17:32:11
+ * @LastEditTime: 2021-08-05 14:20:10
  */
 module.exports = {
 	root: true,
@@ -27,7 +27,8 @@ module.exports = {
 		"no-param-reassign": "off",
 		"no-nested-ternary": "off",
 		"class-methods-use-this": "off",
-		"no-unused-expressions": "off"
+		"no-unused-expressions": "off",
+		"no-underscore-dangle": "off"
 	},
 	globals: {
 		logger: true,
