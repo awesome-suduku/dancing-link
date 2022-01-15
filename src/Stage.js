@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2022-01-15 12:41:44
+ * @LastEditTime: 2022-01-15 14:00:36
  */
 const log = console.log;
 const Element = require("@/Element.js");
@@ -76,6 +76,7 @@ class Stage {
     const time = date.getMilliseconds();
     id = `${id}-${time}`;
     log(`dancing... ${id}`);
+    log(this.chain);
 
     // step1: get head.right with next
     const next = this.head.right;
@@ -85,6 +86,7 @@ class Stage {
     const isHead = this.head.check(next);
     log(`check next is head: ${isHead}`);
 
+    // only has head get the answer
     if (isHead) {
       log(`find plan: ${this.plan}`);
       log(`dancing end ${id}`);
@@ -124,8 +126,6 @@ class Stage {
 
       return result;
     });
-
-    log(this.chain);
 
     console.log(drops);
     this.redo(drops);

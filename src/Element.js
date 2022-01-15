@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2022-01-15 12:30:30
+ * @LastEditTime: 2022-01-15 13:56:00
  */
 const util = require("util");
 const log = console.log;
@@ -24,7 +24,7 @@ class Element {
     // matrix 0/1
     this.value = p.value;
 
-    // head/base/col
+    // head/base/"col"
     this.type = p.type || "base";
 
     // check used
