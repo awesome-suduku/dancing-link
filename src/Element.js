@@ -4,10 +4,10 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2022-01-15 13:56:00
+ * @LastEditTime: 2022-01-15 15:50:11
  */
 const util = require("util");
-const log = console.log;
+const log = require("@/log.js").log;
 class Element {
   constructor(p = {}) {
     // link element

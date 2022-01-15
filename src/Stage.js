@@ -4,9 +4,9 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2022-01-15 14:00:36
+ * @LastEditTime: 2022-01-15 15:51:47
  */
-const log = console.log;
+const log = require("@/log.js").log;
 const Element = require("@/Element.js");
 class Stage {
   constructor(matrix) {
@@ -98,7 +98,7 @@ class Stage {
     log(`next tap`);
     const { marks, drops } = next.tap();
 
-    log(`next tap count: ${marks.length} select`);
+    log(`next tap select count: ${marks.length}`);
     log(this.chain);
     if (!marks.length) log(`dancing end ${id}`);
     if (!marks.length) return false;
@@ -116,9 +116,6 @@ class Stage {
         return ele.tap().drops;
       });
 
-      log(`redoCollection: `);
-      log(dropCollection);
-
       const result = this.dancing({ id });
 
       this.redo(dropCollection);
@@ -127,7 +124,6 @@ class Stage {
       return result;
     });
 
-    console.log(drops);
     this.redo(drops);
 
     console.log(`result ${results.includes(true)}`);
