@@ -4,8 +4,9 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2021-08-05 17:45:12
+ * @LastEditTime: 2022-01-15 12:41:44
  */
+const log = console.log;
 const Element = require("@/Element.js");
 class Stage {
   constructor(matrix) {
@@ -13,11 +14,11 @@ class Stage {
      * matrix: to be solved
      * 待解决的矩阵
      */
-    this.matrix = matrix;
+    this.matrix = this.checkMatrix(matrix);
 
     /**
      * dlx height
-     * 跳舞链盘的高度
+     * 跳舞链盘的高度,+1为列节点
      */
     this.height = this.matrix.length + 1;
 
@@ -74,50 +75,57 @@ class Stage {
     const date = new Date();
     const time = date.getMilliseconds();
     id = `${id}-${time}`;
-    console.log(`dancing... ${id}`);
+    log(`dancing... ${id}`);
 
     // step1: get head.right with next
     const next = this.head.right;
-    console.log(`get next: ${next.getCoordinate()}`);
+    log(`get next: ${next.getCoordinate()}`);
 
+    // check next is head
     const isHead = this.head.check(next);
-    console.log(`check next is head: ${isHead}`);
+    log(`check next is head: ${isHead}`);
+
     if (isHead) {
-      console.log(`find plan: ${this.plan}`);
-      console.log(`dancing end ${id}`);
+      log(`find plan: ${this.plan}`);
+      log(`dancing end ${id}`);
       this.ans.push(this.plan.concat());
       return true;
     }
 
     // step2: mark next
-    console.log(`next tap`);
+    log(`next tap`);
     const { marks, drops } = next.tap();
 
-    console.log(`next tap count: ${marks.length}`);
-    if (!marks.length) console.log(`dancing end ${id}`);
+    log(`next tap count: ${marks.length} select`);
+    log(this.chain);
+    if (!marks.length) log(`dancing end ${id}`);
     if (!marks.length) return false;
 
-    const results = marks.map((mark, i) => {
+    const results = marks.map(mark => {
+      const index = mark.index;
       // save row count
-      console.log(`try select ${i}`);
-      this.plan.push(mark.index);
+      log(`try select ${index}`);
+      this.plan.push(index);
 
-      //
-      console.log(`tap select ${i} col as same row`);
+      // step3 mark other element col as same row
+      log(`tap select ${index} element col as same row`);
+      log(mark.rows);
       const dropCollection = mark.rows.map(ele => {
-        return ele.col.tap().drops;
+        return ele.tap().drops;
       });
 
-      console.log(`redoCollection: `);
-      console.log(dropCollection);
+      log(`redoCollection: `);
+      log(dropCollection);
 
       const result = this.dancing({ id });
 
       this.redo(dropCollection);
-      console.log(`redo: ${this.plan}`);
+      log(`redo: ${this.plan}`);
 
       return result;
     });
+
+    log(this.chain);
 
     console.log(drops);
     this.redo(drops);
@@ -140,8 +148,8 @@ class Stage {
    */
   init() {
     this.chain = this.createChain();
-    this.cols = this.getCols();
     this.head = this.getHead();
+    this.cols = this.getCols();
     this.rows = this.getRows();
     this.linkChain();
     // this.clear();
@@ -154,17 +162,18 @@ class Stage {
    */
   createChain() {
     // add head element
-    const chain = [].concat(
-      { row: new Array(this.width).fill({}) },
-      this.matrix
-    );
+    const chain = [].concat(this.createColList(), this.matrix);
     return chain.map((row, x) => {
       return row.row.map((el, y) => {
         // when 1 or {}
-        if (el) return new Element({ x, y, row: x });
+        if (el) return new Element({ x, y });
         return undefined;
       });
     });
+  }
+
+  createColList() {
+    return { row: new Array(this.width).fill({}) };
   }
 
   /**
@@ -181,11 +190,9 @@ class Stage {
    * @description create dlx rows
    * @returns rows
    */
-  getRows(chain = this.chain, head = this.head) {
-    return chain.map((row, i) => {
+  getRows(chain = this.chain) {
+    return chain.map(row => {
       return [].concat(
-        // add head element in first row
-        i === 0 ? [head] : [],
         row.filter(el => {
           if (el) return true;
         })
@@ -216,7 +223,7 @@ class Stage {
   linkChain() {
     this.rows.map((row, x) => {
       row.map((ele, y) => {
-        ele.type = x === 0 ? (y === 0 ? "head" : "col") : "base";
+        ele.type = x === 0 ? "col" : "base";
         ele.right = row[y === row.length - 1 ? 0 : y + 1];
         ele.left = row[y === 0 ? row.length - 1 : y - 1];
         // all element will be use (head)
@@ -234,6 +241,12 @@ class Stage {
         ele.name = `[up[${ele.up.x},${ele.up.y}],down[${ele.down.x},${ele.down.y}],left[${ele.left.x},${ele.left.y}],right[${ele.right.x},${ele.right.y}]]`;
       });
     });
+
+    this.head.right = this.rows[0][0];
+    this.head.left = this.rows[0][0].left;
+    this.head.left.right = this.head;
+    this.rows[0][0].left = this.head;
+    this.head.use = true;
   }
 
   /**
@@ -252,6 +265,15 @@ class Stage {
     });
     // redo plan
     this.plan.pop();
+  }
+
+  checkMatrix(matrix) {
+    if (!(matrix instanceof Array)) throw new Error("this matrix is not array");
+    const check = matrix.filter(row => {
+      if (row.data !== undefined || row.row !== undefined) return true;
+    });
+    if (!check.length) throw new Error("this matrix must had data and row");
+    return matrix;
   }
 }
 

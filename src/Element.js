@@ -4,8 +4,10 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2021-08-05 17:43:35
+ * @LastEditTime: 2022-01-15 12:30:30
  */
+const util = require("util");
+const log = console.log;
 class Element {
   constructor(p = {}) {
     // link element
@@ -16,6 +18,8 @@ class Element {
 
     // cX
     this.col = null;
+
+    this.row = p.x;
 
     // matrix 0/1
     this.value = p.value;
@@ -62,15 +66,11 @@ class Element {
    */
   tap() {
     // get marks before drop
-    const marks = this.getCols().map(col => {
+    const marks = this.col.getCols().map(col => {
       const rows = col.getRows().concat([col]);
-      console.log(`mark index: ${col.x},count: ${rows.length}`);
+      log(`mark row index: ${col.x},find count: ${rows.length}`);
       return { index: col.x, rows };
     });
-
-    // const _drops = this.outLine(this, "down", [], collection => {
-    //   this.outLine(this.down, "right", collection);
-    // });
 
     const drops = marks
       .reduce((acc, next) => {
@@ -79,6 +79,8 @@ class Element {
       .concat([this]);
 
     drops.map(each => {
+      log(`drop item:`);
+      log(each);
       each.out();
     });
 
@@ -137,6 +139,14 @@ class Element {
 
   getCoordinate() {
     return `[${this.x},${this.y}]`;
+  }
+
+  [util.inspect.custom]() {
+    return this.use ? `${this.type}${this.getCoordinate()}` : `out`;
+  }
+
+  getName() {
+    return this.getCoordinate();
   }
 }
 
