@@ -4,17 +4,24 @@
  * @Author: lax
  * @Date: 2021-04-13 10:05:08
  * @LastEditors: lax
- * @LastEditTime: 2022-01-15 15:56:04
+ * @LastEditTime: 2022-01-17 12:19:41
  * @FilePath: \dancing-links\test\data\index.js
  */
 module.exports = {
   one: [
-    { data: "010", row: [0, 1, 0, 0, 1] },
-    { data: "100", row: [1, 0, 0, 1, 0] },
-    { data: "101", row: [1, 0, 1, 0, 1] },
-    { data: "001", row: [0, 0, 1, 0, 0] }
+    { data: "01001", row: [0, 1, 0, 0, 1] },
+    { data: "10010", row: [1, 0, 0, 1, 0] },
+    { data: "10101", row: [1, 0, 1, 0, 1] },
+    { data: "00100", row: [0, 0, 1, 0, 0] },
+    { data: "01010", row: [0, 1, 0, 1, 0] }
   ],
-  two: [],
+  two: [
+    { data: "01001", row: [0, 1, 0, 0, 1] },
+    { data: "10010", row: [1, 0, 0, 1, 0] },
+    { data: "10101", row: [1, 0, 1, 0, 1] },
+    { data: "00100", row: [0, 0, 1, 0, 0] },
+    { data: "01010", row: [0, 1, 0, 1, 0] }
+  ],
   zero: [
     { data: "010", row: [0, 1, 0] },
     { data: "100", row: [0, 0, 0] },
