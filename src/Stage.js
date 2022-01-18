@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-08 19:31:35
  * @LastEditors: lax
- * @LastEditTime: 2022-01-15 15:51:47
+ * @LastEditTime: 2022-01-18 09:48:28
  */
 const log = require("@/log.js").log;
 const Element = require("@/Element.js");
@@ -80,7 +80,7 @@ class Stage {
 
     // step1: get head.right with next
     const next = this.head.right;
-    log(`get next: ${next.getCoordinate()}`);
+    log(`get next: ${next.getName()}`);
 
     // check next is head
     const isHead = this.head.check(next);

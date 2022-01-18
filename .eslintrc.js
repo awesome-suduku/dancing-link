@@ -4,7 +4,7 @@
  * @Author: lax
  * @Date: 2020-10-10 17:07:52
  * @LastEditors: lax
- * @LastEditTime: 2021-08-05 14:20:10
+ * @LastEditTime: 2022-01-18 09:51:36
  */
 module.exports = {
 	root: true,
@@ -32,6 +32,7 @@ module.exports = {
 	},
 	globals: {
 		logger: true,
+		Symbol: true
 	},
 	overrides: [
 		{
