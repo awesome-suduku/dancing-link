@@ -4,9 +4,9 @@
  * @Author: lax
  * @Date: 2020-10-08 19:24:37
  * @LastEditors: lax
- * @LastEditTime: 2022-01-15 15:50:11
+ * @LastEditTime: 2022-01-18 10:49:37
  */
-const util = require("util");
+const inspect = Symbol.for("nodejs.util.inspect.custom");
 const log = require("@/log.js").log;
 class Element {
   constructor(p = {}) {
@@ -42,6 +42,8 @@ class Element {
    * drop element from dance
    */
   out() {
+    if (!this.use) return;
+    log(`drop item: ${this.getName()}`);
     this.left.right = this.right;
     this.right.left = this.left;
     this.up.down = this.down;
@@ -53,11 +55,13 @@ class Element {
    * enter dance
    */
   in() {
+    if (this.use) return;
     this.left.right = this;
     this.right.left = this;
     this.up.down = this;
     this.down.up = this;
     this.use = true;
+    log(`redo item: ${this.getName()}`);
   }
 
   /**
@@ -76,11 +80,9 @@ class Element {
       .reduce((acc, next) => {
         return acc.concat(next.rows);
       }, [])
-      .concat([this]);
+      .concat([this.col]);
 
     drops.map(each => {
-      log(`drop item:`);
-      log(each);
       each.out();
     });
 
@@ -141,12 +143,12 @@ class Element {
     return `[${this.x},${this.y}]`;
   }
 
-  [util.inspect.custom]() {
+  [inspect]() {
     return this.use ? `${this.type}${this.getCoordinate()}` : `out`;
   }
 
   getName() {
-    return this.getCoordinate();
+    return this[inspect]();
   }
 }
 
